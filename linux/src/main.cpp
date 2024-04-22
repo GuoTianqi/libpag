@@ -18,6 +18,7 @@
 
 #include <pag/file.h>
 #include <pag/pag.h>
+#include <sys/stat.h>
 
 int64_t GetTimer() {
   static auto START_TIME = std::chrono::high_resolution_clock::now();
@@ -27,7 +28,8 @@ int64_t GetTimer() {
 }
 
 std::shared_ptr<pag::PAGFile> ReplaceImageOrText() {
-  auto pagFile = pag::PAGFile::Load("../../assets/test2.pag");
+    auto pagFile = pag::PAGFile::Load("../../assets/alpha.pag");
+//  auto pagFile = pag::PAGFile::Load("../resources/20230816【大头秀】生日电视端/hou.pag");
   if (pagFile == nullptr) {
     return nullptr;
   }
@@ -90,6 +92,11 @@ void BmpWrite(unsigned char* image, int imageWidth, int imageHeight, const char*
 }
 
 int main() {
+    if (system("rm -rf output") != 0) {
+        return 1;
+    }
+
+    mkdir("output", 0777);
   auto startTime = GetTimer();
   // Register fallback fonts. It should be called only once when the application is being initialized.
   std::vector<std::string> fallbackFontPaths = {};
@@ -112,9 +119,11 @@ int main() {
   auto pagPlayer = new pag::PAGPlayer();
   pagPlayer->setSurface(pagSurface);
   pagPlayer->setComposition(pagFile);
-
   auto totalFrames = TimeToFrame(pagFile->duration(), pagFile->frameRate());
   auto currentFrame = 0;
+  auto frameRate = pagFile->frameRate();
+
+  printf("------totalFrames:%d, frameRate:%f \n", totalFrames, frameRate);
 
   int bytesLength = pagFile->width() * pagFile->height() * 4;
 
@@ -125,12 +134,13 @@ int main() {
     printf("---currentFrame:%d, flushStatus:%d \n", currentFrame, status);
 
     auto data = new uint8_t[bytesLength];
+
     pagSurface->readPixels(pag::ColorType::BGRA_8888, pag::AlphaType::Premultiplied, data,
                            pagFile->width() * 4);
 
     std::string imageName = std::to_string(currentFrame);
 
-    BmpWrite(data, pagFile->width(), pagFile->height(), imageName.c_str());
+    BmpWrite(data, pagFile->width(), pagFile->height(), ("output/" + imageName).c_str());
 
     delete[] data;
 
@@ -141,5 +151,13 @@ int main() {
 
   printf("----timeCost--:%ld \n", static_cast<long>(GetTimer() - startTime));
 
-  return 0;
+  // 通过ffmpeg合成mp4
+  char ffmpegCmd[256];
+  sprintf(ffmpegCmd, "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 18 -b:v 0 -preset fast -r 30 output/out.mp4", (int) frameRate);
+    printf("ffmpegCmd: %s\n", ffmpegCmd);
+  auto result = system(ffmpegCmd);
+
+  printf("----totalTimeCost--:%ld \n", static_cast<long>(GetTimer() - startTime));
+
+  return result;
 }
