@@ -142,9 +142,46 @@ int main() {
 
     BmpWrite(data, pagFile->width(), pagFile->height(), ("output/" + imageName).c_str());
 
-    delete[] data;
+//      auto alphaLength = pagFile->width() * pagFile->height();
+//      auto alphaData = new uint8_t[alphaLength];
+//      pagSurface->readPixels(pag::ColorType::ALPHA_8, pag::AlphaType::Premultiplied, alphaData,
+//                             pagFile->width());
+//
+//      char fname_bmp[128];
+//      snprintf(fname_bmp, 128, "output/alpha-%s.txt", imageName.c_str());
+//
+//      FILE* fp;
+//      if (!(fp = fopen(fname_bmp, "wt"))) {
+//          return 1;
+//      }
+//      for (int i = 0; i < alphaLength; i++) {
+//          fprintf(fp, "%u,", alphaData[i]);
+//          if ((i+1) % pagFile->width() == 0) {
+//              fputc('\n', fp);
+//          }
+//      }
+//      fclose(fp);
+//
+//      delete[] alphaData;
+//
+//      //
+//      snprintf(fname_bmp, 128, "output/alpha-%s-ori.txt", imageName.c_str());
+//
+//      if (!(fp = fopen(fname_bmp, "wt"))) {
+//          return 1;
+//      }
+//
+//      for (int i = 3; i < bytesLength; i += 4) {
+//          fprintf(fp, "%u,", data[i]);
+//          if ((i+1) % (pagFile->width() * 4) == 0) {
+//              fputc('\n', fp);
+//          }
+//      }
+//      fclose(fp);
 
-    currentFrame++;
+      delete[] data;
+
+      currentFrame++;
   }
 
   delete pagPlayer;
@@ -153,7 +190,7 @@ int main() {
 
   // 通过ffmpeg合成mp4
   char ffmpegCmd[256];
-  sprintf(ffmpegCmd, "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 18 -b:v 0 -preset fast -r 30 output/out.mp4", (int) frameRate);
+  sprintf(ffmpegCmd, "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 18 -b:v 0 -preset fast -vcodec libx264 -pix_fmt yuv420p -r 30 output/out.mp4", (int) frameRate);
     printf("ffmpegCmd: %s\n", ffmpegCmd);
   auto result = system(ffmpegCmd);
 
