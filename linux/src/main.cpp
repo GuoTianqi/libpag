@@ -20,6 +20,19 @@
 #include <pag/pag.h>
 #include <sys/stat.h>
 
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+#include <libavutil/opt.h>
+}
+
 int64_t GetTimer() {
     static auto START_TIME = std::chrono::high_resolution_clock::now();
     auto now = std::chrono::high_resolution_clock::now();
@@ -208,6 +221,7 @@ int main() {
 
     // 通过ffmpeg合成mp4
     char ffmpegCmd[256];
+    system("which ffmpeg");
     sprintf(ffmpegCmd,
             "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 20 -b:v 0 -preset fast -vcodec libx264 -pix_fmt yuv420p -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -r 30 output/out.mp4",
             (int) frameRate);
@@ -215,6 +229,19 @@ int main() {
     auto result = system(ffmpegCmd);
 
     printf("----totalTimeCost--:%ld \n", static_cast<long>(GetTimer() - startTime));
+
+ // Initialize FFmpeg
+    av_register_all();
+    avcodec_register_all();
+
+
+    // Create the output format context
+    AVFormatContext *ofmt_ctx = nullptr;
+    avformat_alloc_output_context2(&ofmt_ctx, nullptr, "mp4", "test.mp4");
+    if (!ofmt_ctx) {
+        std::cerr << "Could not create output format context" << std::endl;
+        return 1;
+    }
 
     return result;
 }

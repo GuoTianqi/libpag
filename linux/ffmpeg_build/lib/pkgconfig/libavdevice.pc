@@ -1,0 +1,14 @@
+prefix=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build
+exec_prefix=${prefix}
+libdir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/lib
+includedir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/include
+
+Name: libavdevice
+Description: FFmpeg device handling library
+Version: 58.13.100
+Requires: libavfilter >= 7.110.100, libswscale >= 5.9.100, libpostproc >= 55.9.100, libavformat >= 58.76.100, libavcodec >= 58.134.100, libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavdevice -lm -latomic -lxcb -lXau -lXdmcp -lxcb-shm -lxcb -lXau -lXdmcp -lxcb-shape -lxcb -lXau -lXdmcp -lxcb-xfixes -lxcb-render -lxcb-shape -lxcb -lXau -lXdmcp -lasound -lm -ldl -lpthread -lrt -lSDL2 -lm -lasound -lm -ldl -lpthread -lpulse-simple -pthread -lpulse -pthread -lX11 -lXext -lXcursor -lXinerama -lXi -lXfixes -lXrandr -lXss -lXxf86vm -ldrm -lgbm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -ldecor-0 -lpthread -lrt -lsndio -lXv -lX11 -lXext
+Libs.private: 
+Cflags: -I${includedir}

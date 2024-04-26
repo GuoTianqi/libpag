@@ -1,0 +1,14 @@
+prefix=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build
+exec_prefix=${prefix}
+libdir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/lib
+includedir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 58.76.100
+Requires: libavcodec >= 58.134.100, libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavformat -lm -latomic -lbz2 -lz -lgnutls -lgmp -lunistring -latomic -lhogweed -lgmp -lnettle -ltasn1 -lidn2 -lunistring -lp11-kit
+Libs.private: 
+Cflags: -I${includedir}

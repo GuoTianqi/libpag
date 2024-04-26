@@ -1,0 +1,14 @@
+prefix=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build
+exec_prefix=${prefix}
+libdir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/lib
+includedir=/home/guotianqi/DataZone/opensource/ffmpeg-4.4.4/ffmpeg_build/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 58.134.100
+Requires: libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavcodec -pthread -lm -latomic -llzma -lz -lmp3lame -lm -lx264 -lpthread -lm -ldl -lva
+Libs.private: 
+Cflags: -I${includedir}

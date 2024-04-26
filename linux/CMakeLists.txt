@@ -14,7 +14,8 @@ add_definitions(-DEGL_EGLEXT_PROTOTYPES)
 add_executable(pag-linux src/main.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/libpag/include
-        src)
+    ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/include # ffmpeg
+    src)
 
 if (APPLE)
     find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices REQUIRED)
@@ -35,6 +36,10 @@ if (APPLE)
     list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/vendor/swiftshader/mac/x64/libGLESv2.dylib)
 
 else ()
+
+    message("===============: linux")
+    message("===============: ${CMAKE_CURRENT_SOURCE_DIR}")
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cppFlags} -pthread")
     add_compile_options(-fPIC)
     add_definitions(-D__STDC_FORMAT_MACROS)
@@ -47,13 +52,30 @@ else ()
     list(APPEND libs ${ZLIB_LIBRARIES})
     list(APPEND libs dl)
 
+    # ffmpeg: libavcodec.a  libavdevice.a  libavfilter.a  libavformat.a  libavutil.a  libpostproc.a  libswresample.a  libswscale.a
+
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libavdevice.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libavfilter.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libavformat.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libavcodec.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libavutil.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libswresample.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libswscale.a)
+    list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg_build/lib/libpostproc.a)
+
+
     list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/vendor/libpag/linux/x64/libpag.a)
     list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/vendor/swiftshader/linux/x64/libEGL.so)
     list(APPEND libs ${CMAKE_CURRENT_SOURCE_DIR}/vendor/swiftshader/linux/x64/libGLESv2.so)
 
+    message("===============: ${libs}")
 endif ()
 
-target_link_libraries(pag-linux ${libs})
+target_link_libraries(pag-linux
+        ${libs}
+        m atomic lzma z mp3lame x264 pthread dl va bz2 gnutls gmp unistring atomic hogweed nettle tasn1 idn2 p11-kit
+        va-drm va-x11 X11 Xv Xext vdpau
+        )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -g -O1")
