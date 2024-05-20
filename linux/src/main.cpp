@@ -42,12 +42,12 @@ int64_t GetTimer() {
 
 std::shared_ptr<pag::PAGFile> ReplaceImageOrText() {
 //    auto pagFile = pag::PAGFile::Load("../../assets/alpha_matte.pag");
-  auto pagFile = pag::PAGFile::Load("../resources/pag/hou.pag");
+  auto pagFile = pag::PAGFile::Load("../resources/pag/照片送祝福.pag");
     if (pagFile == nullptr) {
         return nullptr;
     }
     const int pathSize = 3;
-    std::string picPathList[pathSize] {"../resources/yuzhou.jpg", "../resources/girl-2.jpg", "../resources/girl-1.jpg"};
+    std::string picPathList[pathSize] {"../resources/用户照片.jpg", "../resources/头像框@2x.png", "../resources/用户照片.jpg"};
     for (int i = 0; i < pagFile->numImages(); i++) {
         auto pagImage = pag::PAGImage::FromPath(picPathList[i % pathSize]);
         pagFile->replaceImage(i, pagImage);
@@ -222,9 +222,18 @@ int main() {
     // 通过ffmpeg合成mp4
     char ffmpegCmd[256];
     system("which ffmpeg");
+//    sprintf(ffmpegCmd,
+//            "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 20 -b:v 0 -preset fast -vcodec libx264 -pix_fmt yuv420p -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -r 30 output/out.mp4",
+//            (int) frameRate);
+
     sprintf(ffmpegCmd,
-            "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 20 -b:v 0 -preset fast -vcodec libx264 -pix_fmt yuv420p -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -r 30 output/out.mp4",
+            "ffmpeg -framerate %d -i 'output/%%d.bmp' -crf 20 -b:v 0 -preset fast -vcodec libx264 -pix_fmt yuv420p -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -r 25 output/out.mp4",
             (int) frameRate);
+
+//    sprintf(ffmpegCmd,
+//            "ffmpeg -framerate %d -i 'output/%%d.bmp' -b:v 2100k -bufsize 2100k -vcodec libx264 -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -r 30 output/out.mp4",
+//            (int) frameRate);
+
     printf("ffmpegCmd: %s\n", ffmpegCmd);
     auto result = system(ffmpegCmd);
 
